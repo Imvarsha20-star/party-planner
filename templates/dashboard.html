@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Party Planner Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        form {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        select {
+            margin: 10px 5px;
+            padding: 8px;
+        }
+        button {
+            padding: 8px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        ul {
+            margin: 20px 0;
+        }
+        li {
+            padding: 8px 0;
+        }
+        a {
+            color: #dc3545;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h2>Welcome {{ session['user'] }}</h2>
+
+    <form action="/book" method="post">
+        <select name="event" required>
+            <option value="">Select Event Type</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Wedding">Wedding</option>
+        </select>
+
+        <select name="venue" required>
+            <option value="">Select Venue</option>
+            <option value="Hall">Hall</option>
+            <option value="Garden">Garden</option>
+        </select>
+
+        <button type="submit">Book</button>
+    </form>
+
+    <h3>Your Bookings:</h3>
+    <ul>
+    {% for b in bookings %}
+        <li>{{ b.event }} - {{ b.venue }}</li>
+    {% else %}
+        <li>No bookings yet.</li>
+    {% endfor %}
+    </ul>
+
+    <a href="/logout">Logout</a>
+</body>
+</html>
