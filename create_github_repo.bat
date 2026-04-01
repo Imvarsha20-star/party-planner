@@ -1,4 +1,4 @@
-@echo off
+p@echo off
 echo 🌟 GitHub Repository Setup Guide
 echo ================================
 echo.
