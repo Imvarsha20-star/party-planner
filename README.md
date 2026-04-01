@@ -347,20 +347,39 @@ Once deployed, your Party Planner works on:
 
 ## 🔄 **Push to GitHub**
 
-### **One-Click GitHub Update:**
+### **Complete GitHub Setup (3 Steps):**
+
+#### **Step 1: Create GitHub Repository**
 ```bash
-# Automatically commit and push all changes:
-push_to_github.bat
+# Run this script for step-by-step instructions:
+create_github_repo.bat
 ```
 
-### **Manual Git Commands:**
+#### **Step 2: Push Your Code**
 ```bash
-git add .
-git commit -m "Add deployment features and cloud-ready configuration"
-git push origin main
+# After creating repository, run:
+final_push.bat
+```
+
+#### **Step 3: Deploy to Cloud**
+```bash
+# Choose your platform:
+setup_mongodb.bat    # Set up free database
+deploy_render.bat    # Deploy to Render (recommended)
+# OR
+deploy_railway.bat   # Deploy to Railway
+```
+
+### **Manual Git Commands (Alternative):**
+```bash
+# 1. Create repository on GitHub.com
+# 2. Set remote URL:
+git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+# 3. Push:
+git push -u origin main
 ```
 
 ### **Your GitHub Repository:**
 **https://github.com/Varsha1725/party-planner**
 
-*All deployment-ready features are now on GitHub and ready for cloud deployment! 🚀*
+*All deployment-ready features are committed locally and ready for GitHub! 🚀*
