@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% block title %}Invoice - Party Planner{% endblock %}
+
+{% block content %}
+<section class="card card--wide invoice-card">
+    <div class="invoice-header">
+        <h2>🎉 Event Booking Invoice</h2>
+        <div class="invoice-details">
+            <p><strong>Invoice ID:</strong> {{ booking.invoice_id }}</p>
+            <p><strong>Booking Date:</strong> {{ booking.booking_date }}</p>
+            <p><strong>Status:</strong> <span class="status-{{ booking.status }}">{{ booking.status.title() }}</span></p>
+        </div>
+    </div>
+
+    <div class="invoice-body">
+        <div class="customer-info">
+            <h3>Customer Information</h3>
+            <p><strong>Name:</strong> {{ session['user'] }}</p>
+        </div>
+
+        <div class="event-info">
+            <h3>Event Details</h3>
+            <p><strong>Event Type:</strong> {{ booking.event }}</p>
+            <p><strong>Venue:</strong> {{ booking.venue }}</p>
+            <p><strong>Event Date:</strong> {{ booking.party_date }}</p>
+            {% if booking.time_slot %}
+            <p><strong>Time Slot:</strong> {{ booking.time_slot }}</p>
+            {% endif %}
+        </div>
+
+        <div class="services-breakdown">
+            <h3>Cost Breakdown</h3>
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Venue: {{ booking.venue }}</td>
+                        <td>1</td>
+                        <td>${{ booking.venue_cost }}</td>
+                        <td>${{ booking.venue_cost }}</td>
+                    </tr>
+                    {% if booking.selected_services %}
+                        {% for service in booking.selected_services %}
+                        <tr>
+                            <td>Service: {{ service }}</td>
+                            <td>1</td>
+                            <td>
+                                {% if service.lower() == 'catering' %}$500
+                                {% elif service.lower() == 'decoration' %}$300
+                                {% elif service.lower() == 'photography' %}$400
+                                {% elif service.lower() == 'dj' %}$400
+                                {% else %}$0{% endif %}
+                            </td>
+                            <td>
+                                {% if service.lower() == 'catering' %}$500
+                                {% elif service.lower() == 'decoration' %}$300
+                                {% elif service.lower() == 'photography' %}$400
+                                {% elif service.lower() == 'dj' %}$400
+                                {% else %}$0{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: rgba(255,255,255,0.7);">No additional services selected</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="3"><strong>Total Amount</strong></td>
+                        <td><strong>${{ booking.total_cost }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="payment-info">
+            <h3>Payment Information</h3>
+            <p><strong>Payment Status:</strong> <span class="payment-status">Pending</span></p>
+            <p><strong>Payment Method:</strong> To be confirmed upon arrival</p>
+            <p><strong>Due Date:</strong> {{ booking.party_date }}</p>
+        </div>
+
+        <div class="invoice-footer">
+            <p>Thank you for choosing Party Planner! We look forward to making your event memorable.</p>
+            <p>For any questions, please contact our support team.</p>
+            <div class="invoice-actions">
+                <button onclick="window.print()" class="print-btn">🖨️ Print Invoice</button>
+                <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    .card {
+        background: white !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+    }
+    .invoice-actions {
+        display: none !important;
+    }
+    .site-header, .site-footer, .party-balls {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

@@ -1,38 +1,240 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - All Bookings</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-        h2 {
-            color: #333;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background-color: white;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body>
-    <h2>All Bookings (Admin)</h2>
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - Party Planner{% endblock %}
 
-    <ul>
-    {% for b in bookings %}
-        <li>{{ b.user }} - {{ b.event }} - {{ b.venue }}</li>
-    {% endfor %}
-    </ul>
-</body>
-</html>
+{% block content %}
+<section class="card card--wide">
+    <h2>Admin Dashboard</h2>
+    <p class="form__small">Complete booking analytics and statistics</p>
+
+    <!-- Statistics Overview -->
+    <div class="stats-overview">
+        <div class="stat-card">
+            <h3>{{ total_bookings }}</h3>
+            <p>Total Bookings</p>
+        </div>
+        <div class="stat-card">
+            <h3>${{ total_revenue }}</h3>
+            <p>Total Revenue</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ event_stats|length }}</h3>
+            <p>Event Types</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ venue_stats|length }}</h3>
+            <p>Venues Used</p>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <h3>Booking Analytics</h3>
+
+        <div class="charts-grid">
+            <!-- Event Types Chart -->
+            <div class="chart-container">
+                <h4>Bookings by Event Type</h4>
+                <canvas id="eventChart" width="400" height="300"></canvas>
+            </div>
+
+            <!-- Venue Usage Chart -->
+            <div class="chart-container">
+                <h4>Venue Popularity</h4>
+                <canvas id="venueChart" width="400" height="300"></canvas>
+            </div>
+
+            <!-- Time Slot Distribution -->
+            <div class="chart-container">
+                <h4>Time Slot Distribution</h4>
+                <canvas id="timeSlotChart" width="400" height="300"></canvas>
+            </div>
+
+            <!-- Service Popularity -->
+            <div class="chart-container">
+                <h4>Service Popularity</h4>
+                <canvas id="serviceChart" width="400" height="300"></canvas>
+            </div>
+
+            <!-- Monthly Revenue Chart -->
+            <div class="chart-container chart-wide">
+                <h4>Monthly Revenue (Last 6 Months)</h4>
+                <canvas id="revenueChart" width="800" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="recent-bookings">
+        <h3>Recent Bookings</h3>
+        <div class="bookings-table-container">
+            <table class="bookings-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Event</th>
+                        <th>Venue</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Total Cost</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for b in bookings %}
+                    <tr>
+                        <td>{{ b.user }}</td>
+                        <td>{{ b.event }}</td>
+                        <td>{{ b.venue }}</td>
+                        <td>{{ b.party_date }}</td>
+                        <td>{{ b.time_slot or 'N/A' }}</td>
+                        <td>${{ b.total_cost or 0 }}</td>
+                        <td><span class="status-{{ b.status or 'unknown' }}">{{ b.status or 'Unknown' }}</span></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Prepare data for charts
+const eventLabels = {{ event_stats.keys()|list|tojson }};
+const eventData = {{ event_stats.values()|list|tojson }};
+
+const venueLabels = {{ venue_stats.keys()|list|tojson }};
+const venueData = {{ venue_stats.values()|list|tojson }};
+
+const timeSlotLabels = {{ time_slot_stats.keys()|list|tojson }};
+const timeSlotData = {{ time_slot_stats.values()|list|tojson }};
+
+const serviceLabels = {{ service_stats.keys()|list|tojson }};
+const serviceData = {{ service_stats.values()|list|tojson }};
+
+const revenueLabels = {{ monthly_revenue.keys()|list|tojson }};
+const revenueData = {{ monthly_revenue.values()|list|tojson }};
+
+// Color schemes
+const colors = [
+    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+    '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384', '#36A2EB', '#FFCE56'
+];
+
+// Event Types Chart
+new Chart(document.getElementById('eventChart'), {
+    type: 'doughnut',
+    data: {
+        labels: eventLabels,
+        datasets: [{
+            data: eventData,
+            backgroundColor: colors.slice(0, eventLabels.length),
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Venue Chart
+new Chart(document.getElementById('venueChart'), {
+    type: 'bar',
+    data: {
+        labels: venueLabels,
+        datasets: [{
+            label: 'Bookings',
+            data: venueData,
+            backgroundColor: colors[0],
+            borderColor: colors[0],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Time Slot Chart
+new Chart(document.getElementById('timeSlotChart'), {
+    type: 'pie',
+    data: {
+        labels: timeSlotLabels,
+        datasets: [{
+            data: timeSlotData,
+            backgroundColor: colors.slice(0, timeSlotLabels.length),
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+
+// Service Chart
+new Chart(document.getElementById('serviceChart'), {
+    type: 'horizontalBar',
+    data: {
+        labels: serviceLabels,
+        datasets: [{
+            label: 'Times Selected',
+            data: serviceData,
+            backgroundColor: colors[1],
+            borderColor: colors[1],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        scales: {
+            x: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+// Revenue Chart
+new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: {
+        labels: revenueLabels,
+        datasets: [{
+            label: 'Monthly Revenue ($)',
+            data: revenueData,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: colors[2],
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

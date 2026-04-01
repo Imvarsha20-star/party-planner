@@ -1,44 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Party Planner</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        h1 {
-            color: white;
-            font-size: 3em;
-            margin-bottom: 2em;
-        }
-        a {
-            display: inline-block;
-            padding: 12px 30px;
-            margin: 10px;
-            background-color: white;
-            color: #667eea;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: transform 0.2s;
-        }
-        a:hover {
-            transform: scale(1.05);
-        }
-    </style>
-</head>
-<body>
-    <h1>🎉 Party Planner</h1>
-    <a href="/login">Login</a>
-    <a href="/register">Register</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}Home - Party Planner{% endblock %}
+
+{% block content %}
+<section class="card card--wide" style="text-align:center;">
+  <h1>🎉 Party Planner</h1>
+  <p class="form__small">Create events, book venues and celebrate without stress.</p>
+  <div style="display:flex; gap: 0.9rem; justify-content:center; flex-wrap:wrap; margin-top:1.3rem;">
+    <a href="/login" class="btn btn--primary" style="width:auto;">Login</a>
+    <a href="/register" class="btn btn--primary" style="width:auto;">Register</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Vendor Selection - Party Planner{% endblock %}
+
+{% block content %}
+<section class="card card--wide">
+    <h2>Vendor Selection</h2>
+    <p>Choose the services you need vendors for</p>
+
+    <form action="/vendors" method="post" class="form">
+        <div class="services-grid">
+            <label class="service-option">
+                <input type="checkbox" name="catering" value="1">
+                <span class="service-name">Catering</span>
+            </label>
+            
+            <label class="service-option">
+                <input type="checkbox" name="photography" value="1">
+                <span class="service-name">Photography</span>
+            </label>
+            
+            <label class="service-option">
+                <input type="checkbox" name="decoration" value="1">
+                <span class="service-name">Decoration</span>
+            </label>
+        </div>
+
+        <button type="submit">Find Vendors</button>
+    </form>
+
+    {% if selected_services %}
+    <div class="vendors-section">
+        <h3>Available Vendors</h3>
+        
+        {% for service in selected_services %}
+        <div class="service-vendors">
+            <h4>{{ service }} Vendors</h4>
+            <div class="vendors-grid">
+                {% for vendor in vendors_data[service.lower()] %}
+                <div class="vendor-card">
+                    <h5>{{ vendor.name }}</h5>
+                    <div class="vendor-details">
+                        <span class="rating">⭐ {{ vendor.rating }}</span>
+                        <span class="price-range">{{ vendor.price_range }}</span>
+                    </div>
+                    <p class="specialty">{{ vendor.specialty }}</p>
+                    <button class="select-vendor-btn">Select Vendor</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <p class="form__small"><a href="/dashboard">Back to Dashboard</a></p>
+</section>
+{% endblock %}

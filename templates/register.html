@@ -1,16 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}Register - Party Planner{% endblock %}
+
+{% block content %}
+<section class="card">
     <h2>Register</h2>
-    <form method="post">
-        <input name="username" placeholder="Username" required><br>
-        <input name="password" type="password" placeholder="Password" required><br>
-        <button type="submit">Register</button>
+    <form method="post" class="form" id="registerForm">
+        <label class="form__label">
+            Username
+            <input name="username" placeholder="Username" required autocomplete="username" value="{{ username or '' }}">
+        </label>
+        <label class="form__label">
+            Password
+            <input name="password" type="password" placeholder="Password" required autocomplete="new-password" id="password">
+            <div class="password-requirements">
+                <p class="requirements-title">Password must contain:</p>
+                <ul class="requirements-list">
+                    <li id="length" class="requirement">At least 8 characters</li>
+                    <li id="uppercase" class="requirement">One uppercase letter (A-Z)</li>
+                    <li id="lowercase" class="requirement">One lowercase letter (a-z)</li>
+                    <li id="number" class="requirement">One number (0-9)</li>
+                    <li id="symbol" class="requirement">One special symbol (!@#$%^&*)</li>
+                </ul>
+            </div>
+        </label>
+        <button type="submit" id="registerBtn">Register</button>
+        <p class="form__small">Already registered? <a href="/login">Login here</a></p>
     </form>
-</body>
-</html>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const requirements = {
+        length: document.getElementById('length'),
+        uppercase: document.getElementById('uppercase'),
+        lowercase: document.getElementById('lowercase'),
+        number: document.getElementById('number'),
+        symbol: document.getElementById('symbol')
+    };
+
+    function validatePassword(password) {
+        const checks = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /\d/.test(password),
+            symbol: /[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]/.test(password)
+        };
+
+        Object.keys(checks).forEach(key => {
+            if (checks[key]) {
+                requirements[key].classList.add('met');
+                requirements[key].classList.remove('not-met');
+            } else {
+                requirements[key].classList.add('not-met');
+                requirements[key].classList.remove('met');
+            }
+        });
+
+        return Object.values(checks).every(check => check);
+    }
+
+    passwordInput.addEventListener('input', function() {
+        validatePassword(this.value);
+    });
+
+    // Validate on form submit
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        if (!validatePassword(passwordInput.value)) {
+            e.preventDefault();
+            alert('Please ensure your password meets all requirements before registering.');
+        }
+    });
+});
+</script>
+{% endblock %}

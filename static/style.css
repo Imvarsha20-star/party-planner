@@ -1,25 +1,907 @@
 body {
-    font-family: Arial;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(circle at top left, #ff5f6d 0%, #ffc371 35%, #be4bdb 70%, #4169e1 100%);
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+.page-wrap {
+    min-height: calc(100vh - 90px);
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+}
+
+h1, h2 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+}
+
+h2 {
+    margin-bottom: 12px;
+}
+h2 {
+    color: #ffeb3b;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.14);
+    border: 2px dashed rgba(255, 255, 255, 0.65);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 30px;
+    width: min(420px, 100%);
+    max-width: 760px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0.24), rgba(255,255,255,0.02), rgba(255,255,255,0.24));
+    transform: translateX(-110%);
+    animation: shimmer 2.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.card--wide {
+    width: min(760px, 95%);
+}
+
+.form {
+    display: grid;
+    gap: 1rem;
+}
+
+.form__label {
+    display: grid;
+    gap: 0.35rem;
+    color: rgba(255,255,255,0.90);
+    font-weight: 600;
+}
+
+.form__small {
+    margin: 0;
     text-align: center;
-    background-color: #f4f4f4;
+    color: rgba(255, 255, 255, 0.75);
 }
 
-h1 {
-    color: #ff4081;
+.form__small a {
+    color: #fff;
+    text-decoration: underline;
 }
 
-form {
-    background: white;
-    padding: 20px;
-    margin: 50px auto;
-    width: 300px;
+.booking-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.6rem;
+}
+
+.booking-list li {
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
+    padding: 0.75rem 0.95rem;
+    font-weight: 600;
+}
+
+.time-slot {
+    display: block;
+    font-size: 0.9rem;
+    color: #ffd700;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+
+@keyframes shimmer {
+    0% { transform: translateX(-110%); }
+    50% { transform: translateX(110%); }
+    100% { transform: translateX(110%); }
+}
+
+input {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px 14px;
+    border: 2px solid rgba(255, 255, 255, 0.72);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.9);
+    color: #222;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+input:focus {
+    border-color: #ffe600;
+    box-shadow: 0 0 12px rgba(255, 230, 0, 0.6);
+    outline: none;
 }
 
 button {
-    background-color: #ff4081;
+    background: linear-gradient(45deg, #ffd300, #ff4081, #7c4dff);
+    background-size: 200% 200%;
+    color: #fff;
+    font-weight: 700;
+    padding: 12px;
+    border: 0;
+    width: 100%;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+    background-position: 100% 50%;
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+.party-balls {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.party-balls span {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: float-balls 8s ease-in-out infinite;
+}
+
+@keyframes float-balls {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.1); }
+}
+
+.site-header, .site-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 0.85rem 1rem;
+    color: #fff;
+    font-weight: 600;
+}
+
+.site-header {
+    background: rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    backdrop-filter: blur(8px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.nav-links {
+    display: flex;
+    gap: 0.8rem;
+}
+
+.nav-links a {
+    color: #ffd700;
+    text-decoration: none;
+    font-size: 0.93rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.nav-links a:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.site-footer {
+    padding: 0.75rem 1rem;
+    margin-top: 1rem;
+    font-size: 0.83rem;
+    color: rgba(255, 255, 255, 0.9);
+    justify-content: center;
+}
+
+.flash {
+    margin: 0 auto 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    max-width: min(760px, 100%);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-weight: 700;
+}
+
+.services-grid {
+    display: grid;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.service-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: background 0.2s ease;
+}
+
+.service-option:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.service-option input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    transform: scale(1.2);
+}
+
+.service-name {
+    flex: 1;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.service-price {
+    font-weight: 700;
+    color: #ffd700;
+    font-size: 1.1rem;
+}
+
+.budget-result {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.budget-result h3 {
+    margin-top: 0;
+    color: #ffeb3b;
+    text-align: center;
+}
+
+.total-cost {
+    font-size: 1.3rem;
+    text-align: center;
+    color: #fff;
+    margin: 1rem 0 0;
+}
+
+.vendors-section {
+    margin-top: 2rem;
+}
+
+.vendors-section h3 {
+    color: #ffeb3b;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.service-vendors {
+    margin-bottom: 2rem;
+}
+
+.service-vendors h4 {
+    color: #ffd700;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.vendors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.vendor-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.vendor-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.vendor-card h5 {
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+    font-size: 1.1rem;
+}
+
+.vendor-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.rating {
+    color: #ffd700;
+    font-weight: 600;
+}
+
+.price-range {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.specialty {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 1rem 0;
+    font-style: italic;
+}
+
+.select-vendor-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease;
+    width: 100%;
+}
+
+.select-vendor-btn:hover {
+    background: linear-gradient(45deg, #45a049, #3d8b40);
+}
+
+.password-requirements {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.requirements-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.25rem;
+}
+
+.requirement {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.2s ease;
+}
+
+.requirement.met {
+    color: #4CAF50;
+}
+
+.requirement.met::before {
+    content: '✓ ';
+    font-weight: bold;
+}
+
+.requirement.not-met {
+    color: #f44336;
+}
+
+.requirement.not-met::before {
+    content: '✗ ';
+    font-weight: bold;
+}
+
+.suggestions-section {
+    margin-top: 2rem;
+}
+
+.suggestions-section h3 {
+    color: #ffeb3b;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.suggestions-intro {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.suggestions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.suggestion-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.2s ease, background 0.2s ease;
+    text-align: center;
+}
+
+.suggestion-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.suggestion-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.suggestion-card h4 {
+    margin: 0 0 0.5rem 0;
+    color: #ffd700;
+    font-size: 1.2rem;
+}
+
+.suggestion-reason {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.suggestion-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.suggestion-link {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.suggestion-link:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.suggestions-footer {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.suggestions-footer p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+}
+
+.suggestions-footer a {
+    color: #ffd700;
+    text-decoration: underline;
+}
+
+/* Admin Dashboard Styles */
+.stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #ffd700;
+    font-size: 2rem;
+}
+
+.stat-card p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+}
+
+.charts-section {
+    margin-bottom: 2rem;
+}
+
+.charts-section h3 {
+    color: #ffeb3b;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chart-wide {
+    grid-column: 1 / -1;
+}
+
+.chart-container h4 {
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.recent-bookings h3 {
+    color: #ffeb3b;
+    margin-bottom: 1rem;
+}
+
+.bookings-table-container {
+    overflow-x: auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.bookings-table th,
+.bookings-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bookings-table th {
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    color: #ffd700;
+}
+
+.bookings-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.status-confirmed {
+    background: #4CAF50;
     color: white;
-    padding: 10px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-unknown {
+    background: #9E9E9E;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.services-selection {
+    margin: 1.5rem 0;
+}
+
+.services-label {
+    margin-bottom: 1rem;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.service-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: background 0.2s ease;
+}
+
+.service-checkbox:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.service-checkbox input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    transform: scale(1.2);
+}
+
+.service-checkbox span {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.invoice-card {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.invoice-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.invoice-header h2 {
+    color: #ffd700;
+    margin-bottom: 1rem;
+}
+
+.invoice-details {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.invoice-details p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.status-confirmed {
+    color: #4CAF50;
+    font-weight: bold;
+}
+
+.payment-status {
+    color: #ff9800;
+    font-weight: bold;
+}
+
+.invoice-body {
+    display: grid;
+    gap: 2rem;
+}
+
+.customer-info, .event-info, .payment-info {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.customer-info h3, .event-info h3, .payment-info h3 {
+    color: #ffd700;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.services-breakdown {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.services-breakdown h3 {
+    color: #ffd700;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.invoice-table th, .invoice-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.invoice-table th {
+    background: rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    color: #ffd700;
+}
+
+.invoice-table .total-row {
+    background: rgba(255, 215, 0, 0.2);
+    font-weight: bold;
+}
+
+.invoice-table .total-row td {
+    color: #ffd700;
+    border-top: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.invoice-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.invoice-footer p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0;
+}
+
+.invoice-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.print-btn, .back-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
     border: none;
     cursor: pointer;
+}
+
+.print-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.print-btn:hover {
+    background: linear-gradient(45deg, #45a049, #3d8b40);
+    transform: translateY(-2px);
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffd700;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.bookings-container {
+    display: grid;
+    gap: 1rem;
+}
+
+.booking-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.booking-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.booking-header h4 {
+    margin: 0;
+    color: #ffd700;
+    font-size: 1.1rem;
+}
+
+.booking-date {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.25rem 0.5rem;
+    border-radius: 5px;
+}
+
+.booking-details p {
+    margin: 0.5rem 0;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.booking-actions {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.invoice-link {
+    display: inline-block;
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.invoice-link:hover {
+    background: linear-gradient(45deg, #1976D2, #1565C0);
+    transform: translateY(-2px);
+}
+
+.no-bookings {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.no-bookings p {
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-style: italic;
 }

@@ -1,80 +1,123 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Party Planner Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-        form {
-            margin: 20px 0;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        select {
-            margin: 10px 5px;
-            padding: 8px;
-        }
-        button {
-            padding: 8px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        ul {
-            margin: 20px 0;
-        }
-        li {
-            padding: 8px 0;
-        }
-        a {
-            color: #dc3545;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-    <h2>Welcome {{ session['user'] }}</h2>
+{% extends 'base.html' %}
+{% block title %}Dashboard - Party Planner{% endblock %}
 
-    <form action="/book" method="post">
-        <select name="event" required>
-            <option value="">Select Event Type</option>
-            <option value="Birthday">Birthday</option>
-            <option value="Wedding">Wedding</option>
-        </select>
+{% block content %}
+<section class="card card--wide">
+    <h2>Welcome, {{ session['user'] }}</h2>
 
-        <select name="venue" required>
-            <option value="">Select Venue</option>
-            <option value="Hall">Hall</option>
-            <option value="Garden">Garden</option>
-        </select>
+    <form action="/book" method="post" class="form">
+        <label class="form__label">
+            Event Type
+            <select name="event" required>
+                <option value="">Select event</option>
+                <option value="Birthday">Birthday</option>
+                <option value="Wedding">Wedding</option>
+                <option value="Concert">Concert</option>
+                <option value="Corporate">Corporate</option>
+                <option value="Anniversary">Anniversary</option>
+                <option value="Baby Shower">Baby Shower</option>
+                <option value="Graduation">Graduation</option>
+                <option value="Holiday Party">Holiday Party</option>
+                <option value="Theme Party">Theme Party</option>
+                <option value="Fundraiser">Fundraiser</option>
+                <option value="Conference">Conference</option>
+            </select>
+        </label>
 
-        <button type="submit">Book</button>
+        <label class="form__label">
+            Venue
+            <select name="venue" required>
+                <option value="">Select venue</option>
+                <option value="Hall">Hall</option>
+                <option value="Garden">Garden</option>
+                <option value="Beach">Beach</option>
+                <option value="Rooftop">Rooftop</option>
+                <option value="Banquet Center">Banquet Center</option>
+                <option value="Club">Club</option>
+                <option value="Hotel Ballroom">Hotel Ballroom</option>
+                <option value="Backyard">Backyard</option>
+                <option value="Warehouse">Warehouse</option>
+                <option value="Restaurant">Restaurant</option>
+                <option value="Cultural Center">Cultural Center</option>
+            </select>
+        </label>
+
+        <label class="form__label">
+            Party Date
+            <input type="date" name="party_date" required>
+        </label>
+
+        <label class="form__label">
+            Time Slot
+            <select name="time_slot" required>
+                <option value="">Select time slot</option>
+                <option value="Morning">🌅 Morning (9:00 AM - 2:00 PM)</option>
+                <option value="Afternoon">☀️ Afternoon (2:00 PM - 7:00 PM)</option>
+                <option value="Evening">🌙 Evening (7:00 PM - 12:00 AM)</option>
+            </select>
+        </label>
+
+        <div class="services-selection">
+            <label class="form__label services-label">
+                Additional Services (Optional)
+                <div class="services-grid">
+                    <label class="service-checkbox">
+                        <input type="checkbox" name="catering" value="500">
+                        <span>Catering - $500</span>
+                    </label>
+                    <label class="service-checkbox">
+                        <input type="checkbox" name="decoration" value="300">
+                        <span>Decoration - $300</span>
+                    </label>
+                    <label class="service-checkbox">
+                        <input type="checkbox" name="photography" value="400">
+                        <span>Photography - $400</span>
+                    </label>
+                    <label class="service-checkbox">
+                        <input type="checkbox" name="dj" value="400">
+                        <span>DJ - $400</span>
+                    </label>
+                </div>
+            </label>
+        </div>
+
+        <button type="submit">Book Event</button>
     </form>
 
-    <h3>Your Bookings:</h3>
-    <ul>
-    {% for b in bookings %}
-        <li>{{ b.event }} - {{ b.venue }}</li>
-    {% else %}
-        <li>No bookings yet.</li>
-    {% endfor %}
-    </ul>
+    <h3 class="section-heading">Your Bookings</h3>
+    <div class="bookings-container">
+        {% for b in bookings %}
+        <div class="booking-card">
+            <div class="booking-header">
+                <h4>{{ b.event }} at {{ b.venue }}</h4>
+                <span class="booking-date">{{ b.party_date }}</span>
+                {% if b.time_slot %}
+                <span class="time-slot">{{ b.time_slot }}</span>
+                {% endif %}
+            </div>
+            <div class="booking-details">
+                <p><strong>Services:</strong> 
+                    {% if b.selected_services %}
+                        {{ b.selected_services|join(', ') }}
+                    {% else %}
+                        None
+                    {% endif %}
+                </p>
+                <p><strong>Total Cost:</strong> ${{ b.total_cost or 'N/A' }}</p>
+                {% if b.invoice_id %}
+                <div class="booking-actions">
+                    <a href="/invoice/{{ b.invoice_id }}" class="invoice-link">📄 View Invoice</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="no-bookings">
+            <p>No bookings yet. Create your first booking above!</p>
+        </div>
+        {% endfor %}
+    </div>
 
-    <a href="/logout">Logout</a>
-</body>
-</html>
+    <p class="form__small"><a href="/budget">Estimate Budget</a> | <a href="/vendors">Find Vendors</a> | <a href="/suggestions">Get Suggestions</a> | <a href="/logout">Logout</a></p>
+</section>
+{% endblock %}
