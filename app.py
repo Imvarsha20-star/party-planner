@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, session, flash
 from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 from pymongo.errors import ServerSelectionTimeoutError
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,6 +8,7 @@ import re
 import os
 import uuid
 from dotenv import load_dotenv
+import certifi
 
 # Load environment variables from .env file
 load_dotenv()
@@ -19,17 +21,22 @@ app = Flask(__name__,
 # Get secret key from environment, fallback to default for development
 app.secret_key = os.getenv('SECRET_KEY', 'secret123')
 
-# Honor MONGO_URI env var; fall back to Atlas cloud database.
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb+srv://172005varshar_db_user:IA8nFP6NdYqTRmFI@cluster0.q8mdk0p.mongodb.net/?appName=Cluster0')
+# Database connection configuration
+MONGO_URI = "mongodb+srv://172005varshar_db_user:IA8nFP6NdYqTRmFI@cluster0.q8mdk0p.mongodb.net/?appName=Cluster0"
 
 try:
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000)
-    client.admin.command('ping')  # check connection
-    db = client.party_db
-    print('MongoDB connected successfully')
-except ServerSelectionTimeoutError as e:
+    # Secure Atlas connection using certifi for SSL/TLS
+    client = MongoClient(
+        MONGO_URI,
+        tlsCAFile=certifi.where()
+    )
+    # Verify connection
+    client.admin.command('ping')
+    db = client.get_database('party_db')
+    print('✅ MongoDB connected successfully')
+except Exception as e:
     db = None
-    print('MongoDB connection failed:', e)
+    print(f'❌ MongoDB connection failed: {e}')
 
 def validate_password(password):
     """

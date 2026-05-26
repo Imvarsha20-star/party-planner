@@ -38,11 +38,12 @@ if %errorlevel% neq 0 (
 
 echo.
 echo Checking MongoDB connection...
-python -c "from pymongo import MongoClient; client = MongoClient('mongodb://localhost:27017', serverSelectionTimeoutMS=5000); client.admin.command('ping'); print('✅ MongoDB connected successfully!')"
+python -c "import os; import certifi; from dotenv import load_dotenv; from pymongo import MongoClient; load_dotenv(); uri = os.getenv('MONGO_URI', 'mongodb+srv://172005varshar_db_user:IA8nFP6NdYqTRmFI@cluster0.q8mdk0p.mongodb.net/?appName=Cluster0'); client = MongoClient(uri, serverSelectionTimeoutMS=5000, tlsCAFile=certifi.where()); client.admin.command('ping'); print('✅ Successfully connected to MongoDB Atlas')"
 if %errorlevel% neq 0 (
     echo.
-    echo ⚠️  WARNING: MongoDB is not running or not accessible
-    echo Please make sure MongoDB is installed and running on localhost:27017
+    echo ⚠️  WARNING: Database connection failed.
+    echo If using Atlas, check your MONGO_URI in the .env file.
+    echo If using local, ensure MongoDB is running on localhost:27017.
     echo You can download MongoDB from: https://www.mongodb.com/try/download/community
     echo.
     echo Continuing anyway...
