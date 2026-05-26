@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, session, flash
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError
-from datetime import datetime
+from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
 import re
 import os
+import uuid
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -24,7 +26,7 @@ try:
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000)
     client.admin.command('ping')  # check connection
     db = client.party_db
-    print(f'MongoDB connected successfully to {MONGO_URI}')
+    print('MongoDB connected successfully')
 except ServerSelectionTimeoutError as e:
     db = None
     print('MongoDB connection failed:', e)
@@ -64,12 +66,21 @@ def inject_current_year():
 def home():
     return render_template('index.html')
 
+@app.route('/health')
+def health():
+    """Health check endpoint for deployment monitoring."""
+    db_status = is_db_available()
+    return {
+        "status": "online" if db_status else "degraded",
+        "database": "connected" if db_status else "disconnected"
+    }, 200 if db_status else 503
+
 def is_db_available():
     return db is not None
 
-# Register
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+# Signup
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
     if not is_db_available():
         flash('Database connection is unavailable. Please try again later.')
         return render_template('index.html')
@@ -82,43 +93,43 @@ def register():
         is_valid, message = validate_password(password)
         if not is_valid:
             flash(f'Password validation failed: {message}')
-            return render_template('register.html', username=username)
+            return render_template('signup.html', username=username)
         
         # Check if username already exists
         existing_user = db.users.find_one({"username": username})
         if existing_user:
             flash('Username already exists. Please choose a different username.')
-            return render_template('register.html', username=username)
+            return render_template('signup.html', username=username)
         
+        hashed_password = generate_password_hash(password)
         user = {
             "username": username,
-            "password": password
+            "password": hashed_password # Store hashed password
         }
         db.users.insert_one(user)
-        flash('Registration successful! Start by logging in.')
-        return redirect('/login')
-    return render_template('register.html')
+        flash('Registration successful! Please sign in.')
+        return redirect('/signin')
+    return render_template('signup.html')
 
-# Login
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+# Signin
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
     if not is_db_available():
         flash('Database connection is unavailable. Please try again later.')
         return render_template('index.html')
 
     if request.method == 'POST':
         user = db.users.find_one({
-            "username": request.form['username'],
-            "password": request.form['password']
+            "username": request.form['username']
         })
-        if user:
+        if user and check_password_hash(user['password'], request.form['password']): # Verify hashed password
             session['user'] = user['username']
             flash('Login successful!')
             return redirect('/dashboard')
         else:
             flash('Invalid username or password. Please try again.')
-            return redirect('/login')
-    return render_template('login.html')
+            return redirect('/signin')
+    return render_template('signin.html')
 
 # Dashboard
 @app.route('/dashboard')
@@ -130,15 +141,19 @@ def dashboard():
     if 'user' in session:
         bookings = list(db.bookings.find({"user": session['user']}))
         return render_template('dashboard.html', bookings=bookings)
-    return redirect('/login')
+    return redirect('/signin')
 
 # Booking
 @app.route('/book', methods=['POST'])
 def book():
+    if not is_db_available():
+        flash('Database connection is unavailable. Please try again later.')
+        return redirect('/dashboard')
+
     if 'user' in session:
         party_date = request.form.get('party_date')
         venue = request.form.get('venue')
-        event_type = request.form.get('event')
+        event_type = request.form.get('event_type')
         time_slot = request.form.get('time_slot')
         
         # Validate that party date is not the same as today
@@ -192,7 +207,6 @@ def book():
         total_cost = venue_cost + services_cost
         
         # Generate invoice ID
-        import uuid
         invoice_id = str(uuid.uuid4())[:8].upper()
         
         booking = {
@@ -213,16 +227,18 @@ def book():
         db.bookings.insert_one(booking)
         flash(f'Booking created successfully! Your invoice ID is: {invoice_id}')
         return redirect(f'/invoice/{invoice_id}')
-    flash('Please login first to make a booking.')
-    return redirect('/login')
-    flash('Please login first to make a booking.')
-    return redirect('/login')
+    flash('Please sign-in first to make a booking.')
+    return redirect('/signin')
 
 # Invoice
 @app.route('/invoice/<invoice_id>')
 def invoice(invoice_id):
+    if not is_db_available():
+        flash('Database connection is unavailable.')
+        return redirect('/dashboard')
+
     if 'user' not in session:
-        return redirect('/login')
+        return redirect('/signin')
     
     # Find the booking by invoice ID and user
     booking = db.bookings.find_one({
@@ -268,7 +284,6 @@ def admin():
         time_slot_stats[time_slot] = time_slot_stats.get(time_slot, 0) + 1
 
     # Monthly revenue (last 6 months)
-    from datetime import datetime, timedelta
     monthly_revenue = {}
     six_months_ago = datetime.now() - timedelta(days=180)
 
@@ -305,15 +320,20 @@ def admin():
 @app.route('/budget', methods=['GET', 'POST'])
 def budget():
     if 'user' not in session:
-        return redirect('/login')
+        return redirect('/signin')
     
     total_cost = 0
     selected_services = []
     
     if request.method == 'POST':
+        # Include venue cost in the total
+        venue_cost = request.form.get('venue', 0)
+        total_cost += int(venue_cost)
+
         services = {
             'catering': 500,
             'decoration': 300,
+            'photography': 400,
             'dj': 400
         }
         
@@ -328,7 +348,7 @@ def budget():
 @app.route('/vendors', methods=['GET', 'POST'])
 def vendors():
     if 'user' not in session:
-        return redirect('/login')
+        return redirect('/signin')
     
     selected_services = []
     
@@ -364,7 +384,7 @@ def vendors():
 @app.route('/suggestions', methods=['GET', 'POST'])
 def suggestions():
     if 'user' not in session:
-        return redirect('/login')
+        return redirect('/signin')
     
     selected_event = None
     suggestions = []

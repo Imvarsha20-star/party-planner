@@ -6,7 +6,7 @@ echo This script pushes your committed changes to GitHub
 echo Make sure you've created the GitHub repository first!
 echo.
 
-set /p REPO_URL=Enter your GitHub repository URL (e.g., https://github.com/username/repo.git):
+set REPO_URL=https://github.com/Imvarsha20-star/party-planner.git
 
 if "%REPO_URL%"=="" (
     echo ❌ No repository URL provided!
@@ -18,7 +18,8 @@ if "%REPO_URL%"=="" (
 
 echo.
 echo 🔧 Setting remote URL...
-git remote set-url origin "%REPO_URL%"
+git remote add origin "%REPO_URL%" 2>nul || git remote set-url origin "%REPO_URL%"
+git branch -M main
 
 echo.
 echo 📤 Pushing to GitHub...

@@ -1,123 +1,97 @@
-{% extends 'base.html' %}
-{% block title %}Dashboard - Party Planner{% endblock %}
-
+{% extends "layout.html" %}
 {% block content %}
-<section class="card card--wide">
-    <h2>Welcome, {{ session['user'] }}</h2>
-
-    <form action="/book" method="post" class="form">
-        <label class="form__label">
-            Event Type
-            <select name="event" required>
-                <option value="">Select event</option>
-                <option value="Birthday">Birthday</option>
-                <option value="Wedding">Wedding</option>
-                <option value="Concert">Concert</option>
-                <option value="Corporate">Corporate</option>
-                <option value="Anniversary">Anniversary</option>
-                <option value="Baby Shower">Baby Shower</option>
-                <option value="Graduation">Graduation</option>
-                <option value="Holiday Party">Holiday Party</option>
-                <option value="Theme Party">Theme Party</option>
-                <option value="Fundraiser">Fundraiser</option>
-                <option value="Conference">Conference</option>
-            </select>
-        </label>
-
-        <label class="form__label">
-            Venue
-            <select name="venue" required>
-                <option value="">Select venue</option>
-                <option value="Hall">Hall</option>
-                <option value="Garden">Garden</option>
-                <option value="Beach">Beach</option>
-                <option value="Rooftop">Rooftop</option>
-                <option value="Banquet Center">Banquet Center</option>
-                <option value="Club">Club</option>
-                <option value="Hotel Ballroom">Hotel Ballroom</option>
-                <option value="Backyard">Backyard</option>
-                <option value="Warehouse">Warehouse</option>
-                <option value="Restaurant">Restaurant</option>
-                <option value="Cultural Center">Cultural Center</option>
-            </select>
-        </label>
-
-        <label class="form__label">
-            Party Date
-            <input type="date" name="party_date" required>
-        </label>
-
-        <label class="form__label">
-            Time Slot
-            <select name="time_slot" required>
-                <option value="">Select time slot</option>
-                <option value="Morning">🌅 Morning (9:00 AM - 2:00 PM)</option>
-                <option value="Afternoon">☀️ Afternoon (2:00 PM - 7:00 PM)</option>
-                <option value="Evening">🌙 Evening (7:00 PM - 12:00 AM)</option>
-            </select>
-        </label>
-
-        <div class="services-selection">
-            <label class="form__label services-label">
-                Additional Services (Optional)
-                <div class="services-grid">
-                    <label class="service-checkbox">
-                        <input type="checkbox" name="catering" value="500">
-                        <span>Catering - $500</span>
-                    </label>
-                    <label class="service-checkbox">
-                        <input type="checkbox" name="decoration" value="300">
-                        <span>Decoration - $300</span>
-                    </label>
-                    <label class="service-checkbox">
-                        <input type="checkbox" name="photography" value="400">
-                        <span>Photography - $400</span>
-                    </label>
-                    <label class="service-checkbox">
-                        <input type="checkbox" name="dj" value="400">
-                        <span>DJ - $400</span>
-                    </label>
-                </div>
-            </label>
-        </div>
-
-        <button type="submit">Book Event</button>
-    </form>
-
-    <h3 class="section-heading">Your Bookings</h3>
-    <div class="bookings-container">
-        {% for b in bookings %}
-        <div class="booking-card">
-            <div class="booking-header">
-                <h4>{{ b.event }} at {{ b.venue }}</h4>
-                <span class="booking-date">{{ b.party_date }}</span>
-                {% if b.time_slot %}
-                <span class="time-slot">{{ b.time_slot }}</span>
-                {% endif %}
-            </div>
-            <div class="booking-details">
-                <p><strong>Services:</strong> 
-                    {% if b.selected_services %}
-                        {{ b.selected_services|join(', ') }}
-                    {% else %}
-                        None
-                    {% endif %}
-                </p>
-                <p><strong>Total Cost:</strong> ${{ b.total_cost or 'N/A' }}</p>
-                {% if b.invoice_id %}
-                <div class="booking-actions">
-                    <a href="/invoice/{{ b.invoice_id }}" class="invoice-link">📄 View Invoice</a>
-                </div>
-                {% endif %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h4 class="mb-3">Book an Event</h4>
+                <form action="/book" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Event Type</label>
+                        <select name="event_type" class="form-select" required>
+                            <option value="" disabled selected>Select event type...</option>
+                            <option value="Birthday">Birthday Party</option>
+                            <option value="Wedding">Wedding</option>
+                            <option value="Anniversary">Anniversary</option>
+                            <option value="Corporate">Corporate Event</option>
+                            <option value="Concert">Concert</option>
+                            <option value="Baby Shower">Baby Shower</option>
+                            <option value="Graduation">Graduation</option>
+                            <option value="Theme Party">Theme Party</option>
+                            <option value="Conference">Conference</option>
+                            <option value="Fundraiser">Fundraiser</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Venue</label>
+                        <select name="venue" class="form-select">
+                            <option value="Hall">Hall ($1000)</option>
+                            <option value="Garden">Garden ($800)</option>
+                            <option value="Beach">Beach ($1200)</option>
+                            <option value="Rooftop">Rooftop ($1500)</option>
+                            <option value="Banquet Center">Banquet Center ($2000)</option>
+                            <option value="Club">Club ($1800)</option>
+                            <option value="Hotel Ballroom">Ballroom ($2500)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" name="party_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Time Slot</label>
+                        <select name="time_slot" class="form-select">
+                            <option>Morning (9 AM - 12 PM)</option>
+                            <option>Afternoon (1 PM - 4 PM)</option>
+                            <option>Evening (6 PM - 10 PM)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-block">Additional Services</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="catering" id="s1">
+                            <label class="form-check-label" for="s1">Catering ($500)</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="decoration" id="s2">
+                            <label class="form-check-label" for="s2">Decor ($300)</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="photography" id="s3">
+                            <label class="form-check-label" for="s3">Photo ($400)</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Confirm Booking</button>
+                </form>
             </div>
         </div>
-        {% else %}
-        <div class="no-bookings">
-            <p>No bookings yet. Create your first booking above!</p>
-        </div>
-        {% endfor %}
     </div>
-
-    <p class="form__small"><a href="/budget">Estimate Budget</a> | <a href="/vendors">Find Vendors</a> | <a href="/suggestions">Get Suggestions</a> | <a href="/logout">Logout</a></p>
-</section>
+    <div class="col-md-8">
+        <h3>Your Bookings</h3>
+        <div class="table-responsive">
+            <table class="table table-hover bg-white shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Event</th>
+                        <th>Venue</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.event }}</td>
+                        <td>{{ booking.venue }}</td>
+                        <td>{{ booking.party_date }}</td>
+                        <td>${{ booking.total_cost }}</td>
+                        <td><a href="/invoice/{{ booking.invoice_id }}" class="btn btn-sm btn-outline-primary">Invoice</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

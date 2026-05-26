@@ -57,6 +57,15 @@
 - ✅ **Built-in database** options (but we'll use MongoDB Atlas)
 
 ### Quick Deployment:
+## 🔄 The GitOps Workflow
+
+This project follows a **GitOps** methodology for deployment:
+1. **Source of Truth**: All configuration and code live in GitHub.
+2. **Automatic Synchronization**: Whenever you push to the `main` branch using `push_to_github.bat`, Render/Railway will automatically:
+   - Detect the change.
+   - Install dependencies from `requirements.txt`.
+   - Restart the server with the new code.
+3. **Rollbacks**: To undo a deployment, simply revert the commit in Git; the live site will automatically sync to the previous version.
 
 1. **Sign up**: https://railway.app
 2. **Connect GitHub repo**

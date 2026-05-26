@@ -53,7 +53,7 @@ python app.py
 ## 📋 Features
 
 ### 🎯 Core Features
-- **User Authentication** - Secure registration/login with password validation
+- **User Authentication** - Secure signup/signin with password validation
 - **Event Booking** - Book events with venue, date, and time slot selection
 - **Service Add-ons** - Catering, Decoration, Photography, DJ services
 - **Smart Suggestions** - AI-powered event recommendations
@@ -230,7 +230,7 @@ deploy.bat
 ## �🎮 How to Use
 
 1. **Register** a new account (use strong password with uppercase, lowercase, numbers, symbols)
-2. **Login** to access the dashboard
+2. **Signin** to access the dashboard
 3. **Book Events**:
    - Select event type (Birthday, Wedding, etc.)
    - Choose venue and date

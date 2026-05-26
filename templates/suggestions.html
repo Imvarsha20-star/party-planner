@@ -1,50 +1,28 @@
-{% extends 'base.html' %}
-{% block title %}Event Suggestions - Party Planner{% endblock %}
-
+{% extends "layout.html" %}
 {% block content %}
-<section class="card card--wide">
-    <h2>Smart Event Suggestions</h2>
-    <p>Get personalized service recommendations based on your event type</p>
-
-    <form action="/suggestions" method="post" class="form">
-        <label class="form__label">
-            Event Type
-            <select name="event_type" required>
-                <option value="">Select your event type</option>
-                {% for event_type in event_types %}
-                <option value="{{ event_type }}" {% if selected_event == event_type %}selected{% endif %}>{{ event_type }}</option>
-                {% endfor %}
-            </select>
-        </label>
-
-        <button type="submit">Get Suggestions</button>
-    </form>
-
-    {% if suggestions %}
-    <div class="suggestions-section">
-        <h3>Recommended Services for {{ selected_event }}</h3>
-        <p class="suggestions-intro">Based on your event type, here are our smart recommendations:</p>
-        
-        <div class="suggestions-grid">
-            {% for suggestion in suggestions %}
-            <div class="suggestion-card">
-                <div class="suggestion-icon">{{ suggestion.icon }}</div>
-                <h4>{{ suggestion.service }}</h4>
-                <p class="suggestion-reason">{{ suggestion.reason }}</p>
-                <div class="suggestion-actions">
-                    <a href="/budget" class="suggestion-link">Add to Budget</a>
-                    <a href="/vendors" class="suggestion-link">Find Vendors</a>
-                </div>
-            </div>
+<h3>Event Suggestions</h3>
+<form method="POST" class="mb-4">
+    <div class="input-group">
+        <select name="event_type" class="form-select">
+            {% for type in event_types %}
+            <option value="{{ type }}" {% if selected_event == type %}selected{% endif %}>{{ type }}</option>
             {% endfor %}
-        </div>
+        </select>
+        <button class="btn btn-primary">Get Tips</button>
+    </div>
+</form>
 
-        <div class="suggestions-footer">
-            <p>💡 <strong>Pro Tip:</strong> Use our <a href="/budget">Budget Estimator</a> to calculate costs for these services, or browse <a href="/vendors">available vendors</a> to book them.</p>
+<div class="row">
+    {% for s in suggestions %}
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="display-4 mb-2">{{ s.icon }}</div>
+                <h5 class="card-title">{{ s.service }}</h5>
+                <p class="card-text">{{ s.reason }}</p>
+            </div>
         </div>
     </div>
-    {% endif %}
-
-    <p class="form__small"><a href="/dashboard">Back to Dashboard</a></p>
-</section>
+    {% endfor %}
+</div>
 {% endblock %}

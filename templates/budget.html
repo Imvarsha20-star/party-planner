@@ -1,43 +1,92 @@
-{% extends 'base.html' %}
-{% block title %}Budget Estimation - Party Planner{% endblock %}
-
+{% extends "layout.html" %}
 {% block content %}
-<section class="card card--wide">
-    <h2>Budget Estimation</h2>
-    <p>Estimate the cost for your party services</p>
+<div class="row justify-content-center">
+    <style>
+        /* Custom gradients for budget cards */
+        .bg-gradient-info-custom { background: linear-gradient(45deg, #ff9966, #ff5e62); }
+        .bg-gradient-warning-custom { background: linear-gradient(45deg, #f093fb, #f5576c); }
+        .bg-gradient-danger-custom { background: linear-gradient(45deg, #ee0979, #ff6a00); }
+        .bg-gradient-primary-custom { background: linear-gradient(45deg, #f953c6, #b91d73); }
+    </style>
 
-    <form action="/budget" method="post" class="form">
-        <div class="services-grid">
-            <label class="service-option">
-                <input type="checkbox" name="catering" value="1">
-                <span class="service-name">Catering</span>
-                <span class="service-price">$500</span>
-            </label>
-            
-            <label class="service-option">
-                <input type="checkbox" name="decoration" value="1">
-                <span class="service-name">Decoration</span>
-                <span class="service-price">$300</span>
-            </label>
-            
-            <label class="service-option">
-                <input type="checkbox" name="dj" value="1">
-                <span class="service-name">DJ</span>
-                <span class="service-price">$400</span>
-            </label>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-gradient bg-primary text-white text-center py-3" style="border-radius: 15px 15px 0 0;">
+                <h3 class="card-title mb-0">Budget Estimator</h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Venue Type</label>
+                        <select name="venue" class="form-select">
+                            <option value="1000">Hall ($1000)</option>
+                            <option value="800">Garden ($800)</option>
+                            <option value="1200">Beach ($1200)</option>
+                            <option value="1500">Rooftop ($1500)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Additional Services</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="catering" value="500" id="c">
+                            <label class="form-check-label" for="c">Catering (+$500)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="decoration" value="300" id="d">
+                            <label class="form-check-label" for="d">Decoration (+$300)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="photography" value="400" id="p">
+                            <label class="form-check-label" for="p">Photography (+$400)</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Calculate Total</button>
+                </form>
+
+                {% if total_cost %}
+                <div class="mt-4 p-3 bg-success bg-opacity-10 border border-success rounded text-center">
+                    <h5>Estimated Total</h5>
+                    <h2 class="text-success">${{ total_cost }}</h2>
+                </div>
+                {% endif %}
+            </div>
         </div>
-
-        <button type="submit">Calculate Total</button>
-    </form>
-
-    {% if total_cost > 0 %}
-    <div class="budget-result">
-        <h3>Estimated Budget</h3>
-        <p><strong>Selected Services:</strong> {{ selected_services|join(', ') }}</p>
-        <p class="total-cost"><strong>Total Estimated Cost: ${{ total_cost }}</strong></p>
     </div>
-    {% endif %}
 
-    <p class="form__small"><a href="/dashboard">Back to Dashboard</a></p>
-</section>
+    <div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card bg-gradient-info-custom text-white text-center p-4 border-0 shadow">
+            <div class="display-6 mb-2">💡</div>
+            <h5>Saving Tip</h5>
+            <p class="small mb-0">Book on weekdays to save up to 20% on venue costs!</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-gradient-warning-custom text-dark text-center p-4 border-0 shadow">
+            <div class="display-6 mb-2">📅</div>
+            <h5>Peak Season</h5>
+            <p class="small mb-0">Summer and December bookings fill up 6 months in advance.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-gradient-danger-custom text-white text-center p-4 border-0 shadow">
+            <div class="display-6 mb-2">✨</div>
+            <h5>Premium Perk</h5>
+            <p class="small mb-0">Bundle 3+ services to unlock a free event coordinator.</p>
+        </div>
+    </div>
+</div>
+<style>
+    .btn-primary, .btn-success {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .btn-primary:hover, .btn-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    .btn-primary:active, .btn-success:active {
+        transform: translateY(0);
+    }
+</style>
 {% endblock %}

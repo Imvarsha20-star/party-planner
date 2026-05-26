@@ -1,20 +1,22 @@
+<!-- Renamed from register.html to signup.html -->
 {% extends "layout.html" %}
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-4">
         <div class="card shadow">
             <div class="card-body">
-                <h3 class="card-title text-center mb-4">Signin</h3>
+                <h3 class="card-title text-center mb-4">Sign-Up</h3>
                 <form method="POST">
                     <div class="mb-3">
                         <label class="form-label">Username</label>
-                        <input type="text" name="username" class="form-control" required>
+                        <input type="text" name="username" class="form-control" value="{{ username or '' }}" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
                         <input type="password" name="password" class="form-control" required>
+                        <div class="form-text">Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 symbol.</div>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Signin</button>
+                    <button type="submit" class="btn btn-primary w-100">Sign-Up</button>
                 </form>
             </div>
         </div>

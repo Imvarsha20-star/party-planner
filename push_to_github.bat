@@ -30,7 +30,7 @@ git push origin main
 echo.
 echo ✅ Successfully updated GitHub repository!
 echo.
-echo 🌐 Your GitHub repository: https://github.com/Varsha1725/party-planner
+echo 🌐 Your GitHub repository: https://github.com/Imvarsha20-star/party-planner
 echo.
 echo 📱 Ready for deployment to Render/Railway/PythonAnywhere!
 echo.

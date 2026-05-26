@@ -1,240 +1,83 @@
-{% extends 'base.html' %}
-{% block title %}Admin Dashboard - Party Planner{% endblock %}
-
+{% extends "layout.html" %}
 {% block content %}
-<section class="card card--wide">
-    <h2>Admin Dashboard</h2>
-    <p class="form__small">Complete booking analytics and statistics</p>
-
-    <!-- Statistics Overview -->
-    <div class="stats-overview">
-        <div class="stat-card">
+<style>
+    /* Custom gradients for admin cards */
+    .admin-card-primary { background: linear-gradient(45deg, hsl(13, 58%, 49%), #b9631d); }
+    .admin-card-success { background: linear-gradient(45deg, #d32f2f, #f5576c); }
+    .admin-card-danger { background: linear-gradient(45deg, #ee0909, #ff6a00); }
+    .admin-card-warning { background: linear-gradient(45deg, #ff9966, #ff5e62); }
+    .admin-card-info { background: linear-gradient(45deg, #f5af19, #f12711); }
+    .admin-card-dark { background: linear-gradient(45deg, #485563, #29323c); }
+</style>
+<h2>Admin Dashboard</h2>
+<div class="row mt-4 mb-4">
+    <div class="col-md-6">
+        <div class="card admin-card-primary text-white p-3 shadow">
+            <h5>Total Bookings</h5>
             <h3>{{ total_bookings }}</h3>
-            <p>Total Bookings</p>
         </div>
-        <div class="stat-card">
+    </div>
+    <div class="col-md-6">
+        <div class="card admin-card-success text-white p-3 shadow">
+            <h5>Total Revenue</h5>
             <h3>${{ total_revenue }}</h3>
-            <p>Total Revenue</p>
-        </div>
-        <div class="stat-card">
-            <h3>{{ event_stats|length }}</h3>
-            <p>Event Types</p>
-        </div>
-        <div class="stat-card">
-            <h3>{{ venue_stats|length }}</h3>
-            <p>Venues Used</p>
         </div>
     </div>
+</div>
 
-    <!-- Charts Section -->
-    <div class="charts-section">
-        <h3>Booking Analytics</h3>
-
-        <div class="charts-grid">
-            <!-- Event Types Chart -->
-            <div class="chart-container">
-                <h4>Bookings by Event Type</h4>
-                <canvas id="eventChart" width="400" height="300"></canvas>
-            </div>
-
-            <!-- Venue Usage Chart -->
-            <div class="chart-container">
-                <h4>Venue Popularity</h4>
-                <canvas id="venueChart" width="400" height="300"></canvas>
-            </div>
-
-            <!-- Time Slot Distribution -->
-            <div class="chart-container">
-                <h4>Time Slot Distribution</h4>
-                <canvas id="timeSlotChart" width="400" height="300"></canvas>
-            </div>
-
-            <!-- Service Popularity -->
-            <div class="chart-container">
-                <h4>Service Popularity</h4>
-                <canvas id="serviceChart" width="400" height="300"></canvas>
-            </div>
-
-            <!-- Monthly Revenue Chart -->
-            <div class="chart-container chart-wide">
-                <h4>Monthly Revenue (Last 6 Months)</h4>
-                <canvas id="revenueChart" width="800" height="300"></canvas>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5>Popular Venues</h5>
+                <ul class="list-group">
+                    {% for venue, count in venue_stats.items() %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ venue }} <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
-
-    <!-- Recent Bookings -->
-    <div class="recent-bookings">
-        <h3>Recent Bookings</h3>
-        <div class="bookings-table-container">
-            <table class="bookings-table">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Event</th>
-                        <th>Venue</th>
-                        <th>Date</th>
-                        <th>Time Slot</th>
-                        <th>Total Cost</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for b in bookings %}
-                    <tr>
-                        <td>{{ b.user }}</td>
-                        <td>{{ b.event }}</td>
-                        <td>{{ b.venue }}</td>
-                        <td>{{ b.party_date }}</td>
-                        <td>{{ b.time_slot or 'N/A' }}</td>
-                        <td>${{ b.total_cost or 0 }}</td>
-                        <td><span class="status-{{ b.status or 'unknown' }}">{{ b.status or 'Unknown' }}</span></td>
-                    </tr>
+    <div class="col-md-6">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <h5>Service Adoption</h5>
+                {% for service, count in service_stats.items() %}
+                <div class="mb-2">
+                    <span>{{ service }}</span>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" style="width: {{ (count / total_bookings * 100)|int if total_bookings > 0 else 0 }}%">{{ count }}</div>
+                    </div>
+                </div>
                 {% endfor %}
-                </tbody>
-            </table>
+            </div>
         </div>
     </div>
-</section>
 
-<!-- Chart.js Library -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-// Prepare data for charts
-const eventLabels = {{ event_stats.keys()|list|tojson }};
-const eventData = {{ event_stats.values()|list|tojson }};
-
-const venueLabels = {{ venue_stats.keys()|list|tojson }};
-const venueData = {{ venue_stats.values()|list|tojson }};
-
-const timeSlotLabels = {{ time_slot_stats.keys()|list|tojson }};
-const timeSlotData = {{ time_slot_stats.values()|list|tojson }};
-
-const serviceLabels = {{ service_stats.keys()|list|tojson }};
-const serviceData = {{ service_stats.values()|list|tojson }};
-
-const revenueLabels = {{ monthly_revenue.keys()|list|tojson }};
-const revenueData = {{ monthly_revenue.values()|list|tojson }};
-
-// Color schemes
-const colors = [
-    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
-    '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384', '#36A2EB', '#FFCE56'
-];
-
-// Event Types Chart
-new Chart(document.getElementById('eventChart'), {
-    type: 'doughnut',
-    data: {
-        labels: eventLabels,
-        datasets: [{
-            data: eventData,
-            backgroundColor: colors.slice(0, eventLabels.length),
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            }
-        }
-    }
-});
-
-// Venue Chart
-new Chart(document.getElementById('venueChart'), {
-    type: 'bar',
-    data: {
-        labels: venueLabels,
-        datasets: [{
-            label: 'Bookings',
-            data: venueData,
-            backgroundColor: colors[0],
-            borderColor: colors[0],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Time Slot Chart
-new Chart(document.getElementById('timeSlotChart'), {
-    type: 'pie',
-    data: {
-        labels: timeSlotLabels,
-        datasets: [{
-            data: timeSlotData,
-            backgroundColor: colors.slice(0, timeSlotLabels.length),
-            borderWidth: 2
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: {
-                position: 'bottom'
-            }
-        }
-    }
-});
-
-// Service Chart
-new Chart(document.getElementById('serviceChart'), {
-    type: 'horizontalBar',
-    data: {
-        labels: serviceLabels,
-        datasets: [{
-            label: 'Times Selected',
-            data: serviceData,
-            backgroundColor: colors[1],
-            borderColor: colors[1],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        indexAxis: 'y',
-        responsive: true,
-        scales: {
-            x: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-// Revenue Chart
-new Chart(document.getElementById('revenueChart'), {
-    type: 'line',
-    data: {
-        labels: revenueLabels,
-        datasets: [{
-            label: 'Monthly Revenue ($)',
-            data: revenueData,
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            borderColor: colors[2],
-            borderWidth: 3,
-            fill: true,
-            tension: 0.4
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-</script>
+    <div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5 class="mb-4">Party Type Analytics</h5>
+                <div class="d-flex flex-wrap gap-3">
+                    {% set colors = ['primary', 'success', 'danger', 'warning', 'info', 'dark'] %}
+                    {% for type, count in event_stats.items() %}
+                    <div class="card border-0 text-center shadow" style="min-width: 150px;">
+                        <div class="card-header admin-card-{{ colors[loop.index0 % colors|length] }} text-white" style="border-radius: 10px 10px 0 0;">
+                            {{ type }}
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{ count }}</h3>
+                            <p class="card-text text-muted small">Bookings</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
 {% endblock %}

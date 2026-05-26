@@ -1,4 +1,4 @@
-p@echo off
+@echo off
 echo 🌟 GitHub Repository Setup Guide
 echo ================================
 echo.
@@ -17,7 +17,7 @@ echo 7. Copy the repository URL from the setup page
 echo   (It will look like: https://github.com/Varsha1725/party-planner.git)
 echo.
 echo 8. Run this command with your repository URL:
-echo   git remote set-url origin YOUR_REPOSITORY_URL
+echo   git remote add origin YOUR_REPOSITORY_URL
 echo.
 echo 9. Then push your code:
 echo   git push -u origin main
