@@ -22,7 +22,7 @@ app = Flask(__name__,
 app.secret_key = os.getenv('SECRET_KEY', 'secret123')
 
 # Database connection configuration - Prioritize Environment Variable
-MONGO_URI = os.getenv('MONGO_URI', "mongodb://localhost:27017/party_db")
+MONGO_URI = os.getenv('MONGO_URI', "mongodb+srv://172005varshar_db_user:IA8nFP6NdYqTRmFI@cluster0.q8mdk0p.mongodb.net/party-planner?appName=Cluster0")
 
 try:
     # Determine if we should use TLS (required for Atlas/SRV, usually not for local)
@@ -37,7 +37,7 @@ try:
     )
     # Verify connection
     client.admin.command('ping')
-    db = client.get_database('party_db')
+    db = client.get_database('party-planner')
     print('✅ MongoDB connected successfully')
 except Exception as e:
     db = None
