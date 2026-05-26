@@ -21,14 +21,19 @@ app = Flask(__name__,
 # Get secret key from environment, fallback to default for development
 app.secret_key = os.getenv('SECRET_KEY', 'secret123')
 
-# Database connection configuration
-MONGO_URI = "mongodb+srv://172005varshar_db_user:IA8nFP6NdYqTRmFI@cluster0.q8mdk0p.mongodb.net/?appName=Cluster0"
+# Database connection configuration - Prioritize Environment Variable
+MONGO_URI = os.getenv('MONGO_URI', "mongodb://localhost:27017/party_db")
 
 try:
-    # Secure Atlas connection using certifi for SSL/TLS
+    # Determine if we should use TLS (required for Atlas/SRV, usually not for local)
+    use_tls = MONGO_URI.startswith("mongodb+srv")
+    
     client = MongoClient(
         MONGO_URI,
-        tlsCAFile=certifi.where()
+        serverSelectionTimeoutMS=5000,
+        tls=use_tls,
+        tlsCAFile=certifi.where() if use_tls else None,
+        server_api=ServerApi('1')
     )
     # Verify connection
     client.admin.command('ping')
