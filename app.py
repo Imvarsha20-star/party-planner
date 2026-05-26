@@ -19,8 +19,8 @@ app = Flask(__name__,
 # Get secret key from environment, fallback to default for development
 app.secret_key = os.getenv('SECRET_KEY', 'secret123')
 
-# Honor MONGO_URI env var; fall back to localhost for dev and Atlas for production when set.
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017')
+# Honor MONGO_URI env var; fall back to Atlas cloud database.
+MONGO_URI = os.getenv('MONGO_URI', 'mongodb+srv://172005varshar_db_user:IA8nFP6NdYqTRmFI@cluster0.q8mdk0p.mongodb.net/?appName=Cluster0')
 
 try:
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=10000)
