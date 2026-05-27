@@ -29,15 +29,15 @@
                         <label class="form-label">Additional Services</label>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="catering" value="500" id="c">
-                            <label class="form-check-label" for="c">Catering (+$500)</label>
+                            <label class="form-check-label" for="c">Catering (+rs500)</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="decoration" value="300" id="d">
-                            <label class="form-check-label" for="d">Decoration (+$300)</label>
+                            <label class="form-check-label" for="d">Decoration (+rs300)</label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="photography" value="400" id="p">
-                            <label class="form-check-label" for="p">Photography (+$400)</label>
+                            <label class="form-check-label" for="p">Photography (+rs400)</label>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Calculate Total</button>
@@ -46,7 +46,7 @@
                 {% if total_cost %}
                 <div class="mt-4 p-3 bg-success bg-opacity-10 border border-success rounded text-center">
                     <h5>Estimated Total</h5>
-                    <h2 class="text-success">${{ total_cost }}</h2>
+                    <h2 class="text-success">₹{{ total_cost }}</h2>
                 </div>
                 {% endif %}
             </div>
