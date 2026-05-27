@@ -8,6 +8,7 @@ import re
 import os
 import uuid
 from dotenv import load_dotenv
+from functools import wraps
 import certifi
 
 # Load environment variables from .env file
@@ -22,7 +23,7 @@ app = Flask(__name__,
 app.secret_key = os.getenv('SECRET_KEY', 'secret123')
 
 # Database connection configuration - Prioritize Environment Variable
-MONGO_URI = os.getenv('MONGO_URI', "mongodb+srv://172005varshar_db_user:varsha123@cluster0.q8mdk0p.mongodb.net/?appName=Cluster0")
+MONGO_URI = os.getenv('MONGO_URI', "mongodb://localhost:27017/party-planner")
 
 try:
     # Determine if we should use TLS (required for Atlas/SRV, usually not for local)
@@ -92,11 +93,8 @@ def is_db_available():
 
 # Signup
 @app.route('/signup', methods=['GET', 'POST'])
+@db_required
 def signup():
-    if not is_db_available():
-        flash('Database connection is unavailable. Please try again later.')
-        return render_template('index.html')
-
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -125,11 +123,8 @@ def signup():
 
 # Signin
 @app.route('/signin', methods=['GET', 'POST'])
+@db_required
 def signin():
-    if not is_db_available():
-        flash('Database connection is unavailable. Please try again later.')
-        return render_template('index.html')
-
     if request.method == 'POST':
         user = db.users.find_one({
             "username": request.form['username']
@@ -145,11 +140,8 @@ def signin():
 
 # Dashboard
 @app.route('/dashboard')
+@db_required
 def dashboard():
-    if not is_db_available():
-        flash('Database connection is unavailable. Please try again later.')
-        return render_template('index.html')
-
     if 'user' in session:
         bookings = list(db.bookings.find({"user": session['user']}))
         return render_template('dashboard.html', bookings=bookings)
@@ -157,11 +149,8 @@ def dashboard():
 
 # Booking
 @app.route('/book', methods=['POST'])
+@db_required
 def book():
-    if not is_db_available():
-        flash('Database connection is unavailable. Please try again later.')
-        return redirect('/dashboard')
-
     if 'user' in session:
         party_date = request.form.get('party_date')
         venue = request.form.get('venue')
@@ -244,11 +233,8 @@ def book():
 
 # Invoice
 @app.route('/invoice/<invoice_id>')
+@db_required
 def invoice(invoice_id):
-    if not is_db_available():
-        flash('Database connection is unavailable.')
-        return redirect('/dashboard')
-
     if 'user' not in session:
         return redirect('/signin')
     
@@ -266,11 +252,8 @@ def invoice(invoice_id):
 
 # Admin
 @app.route('/admin')
+@db_required
 def admin():
-    if not is_db_available():
-        flash('Database connection is unavailable. Please try again later.')
-        return render_template('index.html')
-
     all_bookings = list(db.bookings.find())
 
     # Calculate statistics
@@ -339,7 +322,10 @@ def budget():
     
     if request.method == 'POST':
         # Include venue cost in the total
-        venue_cost = request.form.get('venue', 0)
+        try:
+            venue_cost = int(request.form.get('venue', 0))
+        except ValueError:
+            venue_cost = 0
         total_cost += int(venue_cost)
 
         services = {
@@ -374,19 +360,19 @@ def vendors():
     # Mock vendor data - in a real app, this would come from database
     vendors_data = {
         'catering': [
-            {'name': 'Gourmet Delights', 'rating': 4.8, 'price_range': '$$$', 'specialty': 'Fine Dining'},
-            {'name': 'Party Bites', 'rating': 4.5, 'price_range': '$$', 'specialty': 'Finger Foods'},
-            {'name': 'Elegant Eats', 'rating': 4.9, 'price_range': '$$$$', 'specialty': 'Gourmet Cuisine'}
+            {'name': 'Gourmet Delights', 'rating': 4.8, 'price_range': '₹₹₹', 'specialty': 'Fine Dining'},
+            {'name': 'Party Bites', 'rating': 4.5, 'price_range': '₹₹', 'specialty': 'Finger Foods'},
+            {'name': 'Elegant Eats', 'rating': 4.9, 'price_range': '₹₹₹₹', 'specialty': 'Gourmet Cuisine'}
         ],
         'photography': [
-            {'name': 'Capture Moments', 'rating': 4.7, 'price_range': '$$', 'specialty': 'Event Photography'},
-            {'name': 'Lens Masters', 'rating': 4.6, 'price_range': '$$$', 'specialty': 'Professional Shoots'},
-            {'name': 'Memory Keepers', 'rating': 4.8, 'price_range': '$$', 'specialty': 'Candid Photography'}
+            {'name': 'Capture Moments', 'rating': 4.7, 'price_range': '₹₹', 'specialty': 'Event Photography'},
+            {'name': 'Lens Masters', 'rating': 4.6, 'price_range': '₹₹₹', 'specialty': 'Professional Shoots'},
+            {'name': 'Memory Keepers', 'rating': 4.8, 'price_range': '₹₹', 'specialty': 'Candid Photography'}
         ],
         'decoration': [
-            {'name': 'Dream Decor', 'rating': 4.5, 'price_range': '$$', 'specialty': 'Themed Decorations'},
-            {'name': 'Elegant Events', 'rating': 4.7, 'price_range': '$$$', 'specialty': 'Luxury Decor'},
-            {'name': 'Party Wizards', 'rating': 4.4, 'price_range': '$', 'specialty': 'Budget-Friendly'}
+            {'name': 'Dream Decor', 'rating': 4.5, 'price_range': '₹₹', 'specialty': 'Themed Decorations'},
+            {'name': 'Elegant Events', 'rating': 4.7, 'price_range': '₹₹₹', 'specialty': 'Luxury Decor'},
+            {'name': 'Party Wizards', 'rating': 4.4, 'price_range': '₹', 'specialty': 'Budget-Friendly'}
         ]
     }
     

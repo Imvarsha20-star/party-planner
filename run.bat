@@ -38,7 +38,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo Checking MongoDB connection...
-python -c "import os; import certifi; from dotenv import load_dotenv; from pymongo import MongoClient; load_dotenv(); uri = os.getenv('MONGO_URI', 'mongodb+srv://172005varshar_db_user:varsha123@cluster0.q8mdk0p.mongodb.net/project-planner?appName=Cluster0'); client = MongoClient(uri, serverSelectionTimeoutMS=5000, tls=(uri.startswith('mongodb+srv')), tlsCAFile=certifi.where() if uri.startswith('mongodb+srv') else None); client.admin.command('ping'); print('✅ Database connection verified')"
+python -c "import os; import certifi; from dotenv import load_dotenv; from pymongo import MongoClient; load_dotenv(); uri = os.getenv('MONGO_URI', 'mongodb://localhost:27017/party-planner'); client = MongoClient(uri, serverSelectionTimeoutMS=5000, tls=(uri.startswith('mongodb+srv')), tlsCAFile=certifi.where() if uri.startswith('mongodb+srv') else None); client.admin.command('ping'); print('✅ Database connection verified')"
 if %errorlevel% neq 0 (
     echo.
     echo ⚠️  WARNING: Database connection failed.
